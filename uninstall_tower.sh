@@ -14,6 +14,6 @@ yum remove postgresql\* -y
 
 yum remove -y python-psycopg2 python-setuptools libselinux-python setools-libs yum-utils
 
-rm -rf /etc/tower /var/lib/{pgsql,awx,rabbitmq,tower-bundle}
+rm -rf /etc/tower /var/lib/{pgsql,awx,rabbitmq,tower-bundle} /etc/yum.repos.d/ansible-tower.repo
 
 rpm -qa | grep ansible-tower\*
