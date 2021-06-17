@@ -1,0 +1,3 @@
+Unreliable Guide to Kernel Locking issues - https://www.kernel.org/doc/htmldocs/kernel-locking/index.html
+
+Linux Processes - https://tldp.org/LDP/tlk/kernel/processes.html
