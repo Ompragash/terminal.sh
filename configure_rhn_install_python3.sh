@@ -1,4 +1,4 @@
-subscription-manager register --username=rhn-support-oviswana --password='##21221544bB$$'
+subscription-manager register
 
 sudo subscription-manager repos --enable rhel-7-server-optional-rpms --enable rhel-server-rhscl-7-rpms
 
