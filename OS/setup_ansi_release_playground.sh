@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 apt-get update
-apt install -y vim gnupg twine
+apt install -y zsh vim gnupg twine
 pip install antsibull
 cd ~
 git clone https://github.com/Ompragash/ansible-build-data.git
