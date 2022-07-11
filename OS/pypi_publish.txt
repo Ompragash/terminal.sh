@@ -1,0 +1,6 @@
+Publish python package to PyPi reference links:
+- https://packaging.python.org/en/latest/tutorials/packaging-projects/
+- https://realpython.com/pypi-publish-python-package/
+- https://towardsdatascience.com/how-to-publish-a-python-package-to-pypi-7be9dd5d6dcd
+- https://builtin.com/data-science/how-to-publish-python-code-pypi
+- https://www.freecodecamp.org/news/how-to-create-and-upload-your-first-python-package-to-pypi/
