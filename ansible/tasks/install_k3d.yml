@@ -1,0 +1,17 @@
+---
+- name: Get K3d latest release tag
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/k3d-io/k3d/tags?per_page=1
+    return_content: true
+  register: k3d_latest_tag
+
+- name: Get K3d installer
+  ansible.builtin.uri:
+    url: https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh
+    return_content: true
+  register: k3d_installer
+
+- name: Run K3d installer
+  ansible.builtin.shell:
+    cmd: TAG="{{ k3d_latest_tag.json[0].name }}" bash
+    stdin: "{{ k3d_installer.content }}"

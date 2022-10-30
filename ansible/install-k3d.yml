@@ -1,0 +1,8 @@
+---
+- name: Install K3d
+  hosts: server
+  gather_facts: false
+
+  tasks:
+    - name: Include install_k3d.yml tasks file
+      ansible.builtin.include_tasks: tasks/install_k3d.yml
