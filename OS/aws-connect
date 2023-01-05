@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+RED='\033[0;31m'
+PURPLE='\033[0;35m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+USER='ec2-user'
+
+echo
+echo -e "Using ${BLUE}~/op.pem${NC} file"
+
+echo
+read -p 'Hostname: ' hostname
+
+echo
+read -p 'Username (defaults to ec2-user): ' username
+username=${username:-$USER}
+
+echo
+echo -e "Connecting to host ${PURPLE}$hostname${NC} with user ${GREEN}$username${NC}..."
+echo
+
+ssh -i "~/op.pem" -l $username $hostname
