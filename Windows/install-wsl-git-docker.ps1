@@ -26,12 +26,13 @@ if (!(Get-AppxPackage -Name "almalinux.AlmaLinux")) {
 if (!(Get-Command "docker")) {
     # Download Docker for Windows installer
     Write-Host "Downloading Docker for Windows installer..."
-    $dockerInstaller = "$env:TEMP\DockerDesktopInstaller.exe"
-    Invoke-WebRequest "https://download.docker.com/win/stable/Docker%20Desktop%20Installer.exe" -OutFile $dockerInstaller
-
-    # Install Docker for Windows
-    Write-Host "Installing Docker for Windows..."
-    Start-Process -FilePath $dockerInstaller -ArgumentList "--quiet" -Wait
+    $dockerInstaller = "$env:TEMP\docker-20.10.22.zip"
+    Invoke-WebRequest -Uri https://download.docker.com/win/static/stable/x86_64/docker-20.10.22.zip -OutFile $dockerInstaller
+    # Unzip the downloaded file
+    $shell = new-object -com shell.application
+    $zip = $shell.NameSpace($dockerInstaller)
+    $destination = $shell.NameSpace($env:TEMP)
+    $destination.CopyHere($zip.items())
     Write-Host "Docker for Windows has been installed."
 } else {
     Write-Host "Docker for Windows is already installed."
