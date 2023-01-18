@@ -7,21 +7,6 @@ if (!(Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsyste
     Write-Host "Windows Subsystem for Linux (WSL) is already enabled."
 }
 
-# Check if AlmaLinux distribution is already installed
-if (!(Get-AppxPackage -Name "almalinux.AlmaLinux")) {
-    # Download AlmaLinux distribution from Microsoft Store
-    Write-Host "Downloading AlmaLinux distribution from Microsoft Store..."
-    $almaAppx = "$env:TEMP\AlmaLinux.appx"
-    Invoke-WebRequest -Uri https://aka.ms/wsl-almalinux -OutFile $almaAppx -UseBasicParsing
-    
-    # Install AlmaLinux distribution
-    Write-Host "Installing AlmaLinux distribution..."
-    Add-AppxPackage $almaAppx
-    Write-Host "AlmaLinux distribution has been installed."
-} else {
-    Write-Host "AlmaLinux distribution is already installed."
-}
-
 # Check if Docker is already installed
 if (!(Get-Command "docker")) {
     # Download Docker for Windows installer
