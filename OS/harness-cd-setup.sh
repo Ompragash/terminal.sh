@@ -75,18 +75,26 @@ install_docker() {
     fi
 }
 
+check_docker() {
+    if [ -x "$(command -v docker)" ]; then
+        git clone https://tiny.one/harness-cd-community
+        echo "Pulling below docker images mentioned in the docker-compose.yml file..."
+        docker compose -f harness-cd-community/docker-compose/harness/docker-compose.yml config | grep 'image:' | awk '{print $2}'
+        docker compose -f harness-cd-community/docker-compose/harness/docker-compose.yml pull > /dev/null
+        export HARNESS_HOST="$(hostname -i)"
+        docker compose -f harness-cd-community/docker-compose/harness/docker-compose.yml up -d
+        echo "Access the deployed Harness CD Community using link http://$(hostname -i)/#/signup"
+        return 0
+    else
+        if ! install_docker; then
+            exit 1
+        fi
+    fi
+}
+
 if ! check_git; then
     exit 1
+else
+    check_docker
 fi
 
-if ! install_docker; then
-    exit 1
-fi
-
-git clone https://tiny.one/harness-cd-community
-echo "Pulling below docker images mentioned in the docker-compose.yml file..."
-docker compose -f harness-cd-community/docker-compose/harness/docker-compose.yml config | grep 'image:' | awk '{print $2}'
-docker compose -f harness-cd-community/docker-compose/harness/docker-compose.yml pull
-export HARNESS_HOST="$(hostname -i)"
-docker compose -f harness-cd-community/docker-compose/harness/docker-compose.yml up -d
-echo "Access the deployed Harness CD Community using link http://$(hostname -i)/#/signup"
