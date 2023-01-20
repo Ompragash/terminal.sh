@@ -4,8 +4,6 @@ check_git() {
     if [ -x "$(command -v git)" ]; then
         return 0
     else
-        echo "Error: git is not installed. This script requires git to clone Harness CD Community repo."
-        echo "Install git and rerun the script."
         return 1
     fi
 }
@@ -75,24 +73,31 @@ install_docker() {
     fi
 }
 
+setup_and_start_harness_cd() {
+    git clone https://tiny.one/harness-cd-community
+    echo "Pulling below docker images mentioned in the docker-compose.yml file..."
+    docker compose -f harness-cd-community/docker-compose/harness/docker-compose.yml config | grep 'image:' | awk '{print $2}'
+    docker compose -f harness-cd-community/docker-compose/harness/docker-compose.yml pull -q
+    export HARNESS_HOST="$(hostname -i)"
+    docker compose -f harness-cd-community/docker-compose/harness/docker-compose.yml up -d
+    echo "Access the deployed Harness CD Community using link http://$(hostname -i)/#/signup"
+}
+
 check_docker() {
     if [ -x "$(command -v docker)" ]; then
-        git clone https://tiny.one/harness-cd-community
-        echo "Pulling below docker images mentioned in the docker-compose.yml file..."
-        docker compose -f harness-cd-community/docker-compose/harness/docker-compose.yml config | grep 'image:' | awk '{print $2}'
-        docker compose -f harness-cd-community/docker-compose/harness/docker-compose.yml pull > /dev/null
-        export HARNESS_HOST="$(hostname -i)"
-        docker compose -f harness-cd-community/docker-compose/harness/docker-compose.yml up -d
-        echo "Access the deployed Harness CD Community using link http://$(hostname -i)/#/signup"
+        setup_and_start_harness_cd
         return 0
     else
         if ! install_docker; then
             exit 1
         fi
+        setup_and_start_harness_cd
     fi
 }
 
 if ! check_git; then
+    echo "Error: git is not installed. This script requires git to clone Harness CD Community repo."
+    echo "Install git and rerun the script."
     exit 1
 else
     check_docker
