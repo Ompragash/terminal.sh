@@ -59,8 +59,8 @@ install_docker() {
     if [ -f /etc/redhat-release ]; then
         # Red Hat-based distribution
         install_docker_centos
-    elif [ -f /etc/redhat-release ]; then
-        # Red Hat-based distribution
+    elif [ -f /etc/fedora-release ]; then
+        # Fedora distribution
         install_docker_fedora
     elif [ -f /etc/lsb-release ]; then
         # Ubuntu-based distribution
