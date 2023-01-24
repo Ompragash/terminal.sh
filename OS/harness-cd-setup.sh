@@ -1,31 +1,61 @@
 #!/bin/bash
+#
+# Created on Jan 20, 2023
+#
+# @author: Ompragash Viswanathan (ompragash@proton.me) GitHub ID: ompragash
+#
+# Copyright: (c) 2023 Ompragash Viswanathan, <ompragash@harness.io>
+# MIT License (see LICENSE or https://choosealicense.com/licenses/mit/)
+#
 
+REQUIRED_RAM=3
+REQUITED_CPU=2
+AVAILABLE_RAM=$(free -g | grep Mem | awk '{ print $2 }')
+AVAILABLE_CPU=$(nproc)
+
+
+check_system_requirements() {
+    if [[ $AVAILABLE_RAM -lt $REQUIRED_RAM ]]; then
+        echo "Error: Insufficient RAM. Requires $REQUIRED_RAM GB, but only $AVAILABLE_RAM GB available."
+        return 1
+    elif [[ $AVAILABLE_CPU -lt $REQUIRED_CPU ]]; then
+        echo "Error: Insufficient CPU. Requires $REQUIRED_CPU cores, but only $AVAILABLE_CPU cores available."
+        return 1
+    else
+        return 0
+    fi
+}
+
+
+# Function to check `git` command. Returns 0 if installed and 1 if not
 check_git() {
     if [ -x "$(command -v git)" ]; then
         return 0
     else
+        echo "Error: git is not installed. This script requires git to clone Harness CD Community repo."
+        echo "Install git and rerun the script."
         return 1
     fi
 }
 
+# Function to Install and Enable Docker on Fedora distribution
 install_docker_fedora() {
-    # Install and Enable Docker on Fedora distribution
     dnf -y install dnf-plugins-core
     dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
     dnf -y install docker-ce docker-ce-cli containerd.io docker-compose-plugin
     systemctl enable docker; systemctl start docker
 }
 
+# Function to Install and Enable Docker on CentOS, AlmaLinux, and RockyLinux distributions
 install_docker_centos() {
-    # Install and Enable Docker on CentOS, AlmaLinux, and RockyLinux distributions
     dnf -y install yum-utils
     dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
     dnf -y install docker-ce docker-ce-cli containerd.io docker-compose-plugin
     systemctl enable docker; systemctl start docker
 }
 
+# Function to Install and Enable Docker on Ubuntu-based distributions
 install_docker_ubuntu() {
-    # Install and Enable Docker on Ubuntu-based distributions
     apt-get update
     apt-get install ca-certificates curl gnupg lsb-release -y
     mkdir -p /etc/apt/keyrings
@@ -38,8 +68,8 @@ install_docker_ubuntu() {
     systemctl enable docker; systemctl start docker
 }
 
+# Function to Install and Enable Docker on Debian-based distributions
 install_docker_debian() {
-    # Install and Enable Docker on Debian-based distributions
     apt-get update
     apt-get install ca-certificates curl gnupg lsb-release -y
     mkdir -p /etc/apt/keyrings
@@ -52,7 +82,8 @@ install_docker_debian() {
     systemctl enable docker; systemctl start docker
 }
 
-
+# Function that'll check the linux distribution and call's required install_docker_* function
+# from above. Returns 1 if Docker can't be installed.
 install_docker() {
     # Check the Linux distribution
     if [ -f /etc/redhat-release ]; then
@@ -73,6 +104,7 @@ install_docker() {
     fi
 }
 
+# Clone harness-cd-community GitHub repo and run docker-compose to setup Harness CD Community
 setup_and_start_harness_cd() {
     git clone https://tiny.one/harness-cd-community
     echo "Pulling below docker images mentioned in the docker-compose.yml file..."
@@ -80,9 +112,12 @@ setup_and_start_harness_cd() {
     docker compose -f harness-cd-community/docker-compose/harness/docker-compose.yml pull -q
     export HARNESS_HOST="$(hostname -i)"
     docker compose -f harness-cd-community/docker-compose/harness/docker-compose.yml up -d
-    echo "Access the deployed Harness CD Community using link http://$(hostname -i)/#/signup"
+    echo "Congratulations! Deployed docker based Harness CD community edition successfully!"
+    echo "Access the instance using link: http://$(hostname -i)/#/signup"
 }
 
+# Function to check `docker` command. Returns 0 and calls setup_and_start_harness_cd() if installed 
+# else installs Docker by calling install_docker)() and 1 if not
 check_docker() {
     if [ -x "$(command -v docker)" ]; then
         setup_and_start_harness_cd
@@ -92,14 +127,22 @@ check_docker() {
             exit 1
         fi
         setup_and_start_harness_cd
+        return 0
     fi
 }
 
-if ! check_git; then
-    echo "Error: git is not installed. This script requires git to clone Harness CD Community repo."
-    echo "Install git and rerun the script."
+# Entrypoint
+# Script fails if the:
+#    - system doesn't meet minimum RAM/CPU required for Harness CD Community to run
+#    - if Git cli is not installed
+# Script installs docker if it is not installed already.
+#
+#
+
+if ! check_system_requirements; then
+    exit 1
+elif ! check_git; then
     exit 1
 else
     check_docker
 fi
-
