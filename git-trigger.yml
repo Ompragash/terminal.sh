@@ -1,0 +1,26 @@
+trigger:
+  name: git-trigger
+  identifier: gittrigger
+  enabled: true
+  encryptedWebhookSecretIdentifier: ""
+  description: ""
+  tags: {}
+  orgIdentifier: Ansibler
+  stagesToExecute: []
+  projectIdentifier: ssh
+  pipelineIdentifier: hmcvhgm
+  source:
+    type: Webhook
+    spec:
+      type: Github
+      spec:
+        type: Push
+        spec:
+          connectorRef: harnessgitconnector1
+          autoAbortPreviousExecutions: false
+          payloadConditions:
+            - key: targetBranch
+              operator: Equals
+              value: master
+          headerConditions: []
+          actions: []
